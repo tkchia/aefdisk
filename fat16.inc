@@ -1,4 +1,4 @@
-bootsec16	label
+bootsec16	label	byte
 
 		DB	0EBh,03Ch,090h
 		db	'MSDOS5.0'	; oem name

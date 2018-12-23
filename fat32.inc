@@ -1,4 +1,4 @@
-bootsec32	label
+bootsec32	label	byte
 
 		db	0EBh,058h,090h
 		db	'MSWIN4.1'

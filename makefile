@@ -1,25 +1,24 @@
-# Macros for building, deleting. Needs Borland C compiler/linker for DOS
+# Macros for building, deleting. Needs Open Watcom
 
-AS=\borlandc\bin\tasm
-ASFLAGS=/m9 /q
-# /zi
+AS=owcc
+ASFLAGS=-bdos
 
-LINK=\borlandc\bin\tlink /x
-# /v
+LD=owcc
+LDFLAGS=-bdos
 
-RM=del
+RM=rm -f
+
+default: all
+
+.SUFFIXES: .asm .obj .exe
 
 # Rule to build .obj from .asm
 
 .asm.obj:
-	$(AS) $(ASFLAGS) $*;
+	$(AS) $(ASFLAGS) -c -o$@ $<
 
 .obj.exe:
-	$(LINK) $*;
-
-.obj.com:
-	$(LINK) /t $*;
-
+	$(LD) $(LDFLAGS) -o$@ $<
 
 # Targets:
 
@@ -27,7 +26,7 @@ all: aefdisk.exe
 
 aefdisk.exe: aefdisk.obj
 
-aefdisk.obj: aefdisk.asm
+aefdisk.obj: aefdisk.asm fat16.inc fat32.inc
 
 # Clean up:
 

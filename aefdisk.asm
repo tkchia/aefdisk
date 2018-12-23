@@ -13,7 +13,7 @@ _DATA		segment	public
 
 ;------------ Buffers ------------
 
-MBRloader       label
+MBRloader	label	byte
 DB 033h,0C0h,08Eh,0D0h,0BCh,000h,07Ch,0FBh,050h,007h,050h,01Fh,0FCh,0BEh,01Bh,07Ch
 DB 0BFh,01Bh,006h,050h,057h,0B9h,0E5h,001h,0F3h,0A4h,0CBh,0BEh,0BEh,007h,0B1h,004h
 DB 038h,02Ch,07Ch,009h,075h,015h,083h,0C6h,010h,0E2h,0F5h,0CDh,018h,08Bh,014h,08Bh
@@ -192,32 +192,32 @@ fstable	dw	offset empty,offset FAT12,offset xenix1,offset xenix2
 	dw	offset FAT32x,offset reserv,offset LBIGDOS,offset LBAext
 	dw	offset opus,offset HFAT12,offset compaq,offset reserv
 	dw	offset HFAT16,offset reserv,offset HBIGDOS,offset HHPFS
-	dw	offset ast,2 dup (offset reserv),offset HFAT32
-	dw	offset HFAT32x,offset reserv,offset HBIGx,5 dup (offset reserv)
-	dw	offset necdos,19 dup (offset reserv)
+	dw	offset ast,offset reserv,offset reserv,offset HFAT32
+	dw	offset HFAT32x,offset reserv,offset HBIGx,5 dup	(reserv)
+	dw	offset necdos,19 dup (reserv)
 	dw	offset theos,offset theoss, offset theos4,offset theose,offset pmagic
-	dw	3 dup (offset reserv),offset venix,offset prisc,offset sfs
-	dw	2 dup (offset reserv), 4 dup (offset eumel), 4 dup (offset reserv)
-        dw      2 dup (offset qnx),offset ober,offset dmro,offset dmrw,offset cpm
+	dw	3 dup (reserv),offset venix,offset prisc,offset sfs
+	dw	2 dup (reserv), 4 dup (eumel), 4 dup (reserv)
+        dw      2 dup (qnx),offset ober,offset dmro,offset dmrw,offset cpm
 	dw	offset dmwo,offset dmddo,offset ezdr,offset golden
-	dw	offset drvp,4 dup (offset reserv),offset pria,4 dup (offset reserv)
+	dw	offset drvp,4 dup (reserv),offset pria,4 dup (reserv)
         dw      offset speed,offset reserv,offset hurd
 	dw	offset nov286,offset nov386,offset reserv,offset novell
-	dw	offset novell,offset novell,6 dup (offset reserv)
-	dw	offset dsec,4 dup (offset reserv),offset pcix
-	dw	10 dup (offset reserv),offset minix1,offset linux
+	dw	offset novell,offset novell,6 dup (reserv)
+	dw	offset dsec,4 dup (reserv),offset pcix
+	dw	10 dup (reserv),offset minix1,offset linux
 	dw	offset linswap,offset ext2fs,offset os2re,offset linext,offset reserv
-	dw	offset hpfsm,11 dup (offset reserv),offset amoeba
-	dw	offset amobad,16 dup (offset reserv),offset freebs
-	dw	17 dup (offset reserv),offset bsdi,offset bsdi2
-	dw	5 dup (offset reserv),offset solboot,offset reserv,offset ctos
-        dw      offset drfat12,2 dup (offset reserv)
+	dw	offset hpfsm,11 dup (reserv),offset amoeba
+	dw	offset amobad,16 dup (reserv),offset freebs
+	dw	17 dup (reserv),offset bsdi,offset bsdi2
+	dw	5 dup (reserv),offset solboot,offset reserv,offset ctos
+        dw      offset drfat12,2 dup (reserv)
 	dw	offset drfat16,offset reserv,offset drbigd,offset syrinx
-	dw	16 dup (offset reserv),offset cpm86,8 dup (offset reserv)
+	dw	16 dup (reserv),offset cpm86,8 dup (reserv)
 	dw	offset ssfat12,offset reserv,offset DOSro,offset ssfat16
-	dw	6 dup (offset reserv),offset beos,5 dup (offset reserv)
+	dw	6 dup (reserv),offset beos,5 dup (reserv)
 	dw	offset stord1,offset DOSsec
-	dw	offset reserv,offset sstor,8 dup (offset reserv),offset linra
+	dw	offset reserv,offset sstor,8 dup (reserv),offset linra
 	dw	offset lanstep,offset xenbad
 
 empty	db	'Empty$'		; 0
@@ -235,7 +235,7 @@ FAT32	db	'FAT32$'		;0Bh
 FAT32x	db	'FAT32 LBA$'		;0Ch
 					;0Dh	 - reserved
 LBIGDOS db	'BIGDOS LBA$'		;0Eh
-LBAext	db	'Extended LBA$'	 	;0Fh
+LBAext	db	'Extended LBA$'		;0Fh
 opus	db	'OPUS$'			;10h
 HFAT12	db	'Hidden FAT12$'		;11h
 compaq	db	'Compaq diag.$'         ;12h
@@ -420,7 +420,7 @@ sectors		dd	0
 
 ebios		db	0		; EBIOS indicator
 
-ebiosparams 	dw	0		; buffer size
+ebiosparams	dw	0		; buffer size
 		dw	0		; information flags
 ecyls		dd	0		; number of physical cylinders on drive
 eheads		dd	0		; number of physical heads on drive
@@ -469,10 +469,10 @@ cutspace	dd	0		; adjustment redundancy
 ptype		db	0		; partition type
 notdels		db	21 dup (0)	; for notdel more (max 20)
 
-dataend		label
-		ends
+dataend		label	byte
+_DATA		ends
 
-GROUP DGROUP _DATA
+DGROUP GROUP _DATA
 
 ;ЩЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЛ
 ;К				Code Segment				     К
@@ -513,7 +513,7 @@ commandline	proc near
 		jne	notw95
 		mov	win95?,1
 
-notw95: 	lea	si,commandbuffer
+notw95:		lea	si,commandbuffer
 		call    skipwhite
 		cmp	al,'?'			; usage info?
 		je	prusage
@@ -634,7 +634,7 @@ getYswitch	proc
 		mov	yes?,1
 @@noyes:	pop	es
 		ret
-		endp
+getYswitch	endp
 
 ;----------- examine command line --------
 
@@ -1003,7 +1003,7 @@ quitparse:	cmp	byte ptr [si],' '
 nomoreparam:    cmp     writeit?,0
                 je      skipwnew
 		xor	eax,eax
-        	xor	bx,bx
+		xor	bx,bx
 		mov	blocks,1
 		call	writesectors	; write new partition table
 		jnc	exitmsg
@@ -1013,7 +1013,7 @@ exitmsg:	lea	dx,savedMBR
 		call	printstring
 
 skipwnew:       mov     writeit?,0
-        	clc
+		clc
 		ret
 
 runcommand	endp
@@ -1099,7 +1099,7 @@ dontmax:	pop	dx
 
 		ret
 
-		endp
+getparams	endp
 
 ;------------------------ Check AA55 signature --------------------
 
@@ -1117,7 +1117,7 @@ checksignature	proc	near
 @@goodsig:	clc
 @@badsig:	pop	dx
 		ret
-		endp
+checksignature	endp
 
 
 ;ллллллллллллллллллллллллл Print error number лллллллллллллллллллллллллл
@@ -1135,7 +1135,7 @@ errno		proc near
 		call	penter			; print enter
 		ret
 
-		endp
+errno		endp
 
 ;ллллллллллллллллллллллл Lower case commandline лллллллллллллллллллллллллл
 
@@ -1156,7 +1156,7 @@ nextchar:	inc	si
 
 endline:	ret
 
-		endp
+tolower		endp
 
 ;ллллллллллллллллллллллл Check partition table лллллллллллллллллллллллллл
 
@@ -1197,7 +1197,7 @@ noparterror:	mov	eax,es:[di+8]
 		je	noparterr
 		jmp	peror
 
-noparterr:     	pop	cx
+noparterr:	pop	cx
 		add	di,16
 		loop	checknext
 
@@ -1226,7 +1226,7 @@ parterror:	lea	dx,parterrmsg
 		stc
 		ret
 
-		endp
+checktable	endp
 
 ;------------ Check extended partitions for errors --------
 
@@ -1274,9 +1274,9 @@ gnex:		call	getnextext
 
 nomorex:	clc
 badreadex:      mov     extendstart,0
-        	ret
+		ret
 
-		endp
+chkextended	endp
 
 
 ;ллллллллллллллллллллллл Write empty boot sector лллллллллллллллллллллллл
@@ -1286,7 +1286,7 @@ badreadex:      mov     extendstart,0
 
 writeboot       proc
 		call	fillF6boot
-	      	mov	bx,bootbuffer
+		mov	bx,bootbuffer
 		mov	blocks,1
 		call	writesectors		; write one sector
 		jc	erbw
@@ -1310,7 +1310,7 @@ fat32w:		inc	eax
 		jc	erbw
 nomoref6:	clc
 erbw:		ret
-                endp
+writeboot	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;----------------- get available entry and starting sector --------------
@@ -1348,7 +1348,7 @@ addnext:	cmp	byte ptr es:[di+4],0
 emptyentry:	add	di,16
 		loop	addnext
 
-        	mov	eax,etotal		; fill absolute ending
+		mov	eax,etotal		; fill absolute ending
 		mov	[si],eax		; sector value
 
 
@@ -1433,7 +1433,7 @@ exitfseek:	pop	di
 		pop	eax
 		ret
 
-		endp
+getfirstfree	endp
 
 ;-------------------------- Seek largest space -------------------
 
@@ -1470,10 +1470,10 @@ findlarge:	mov	edx,endsect
 notlarger:	add	si,8
 		loop	findlarge
                 ret
-                endp
+findlargest	endp
 
 ;----------------------------------------------------
-get&seek	proc	near
+getandseek	proc	near
 
 ;IN:  emptyspace - selected partition
 ;OUT: DI - points to selected partition entry
@@ -1487,7 +1487,7 @@ get&seek	proc	near
 		pop	ax
 		ret
 
-		endp
+getandseek	endp
 
 ;---------------------------------------
 examcom:	push	si
@@ -1495,7 +1495,7 @@ examcom:	push	si
 
 		push	ds
 		pop	es
-		rep	cmpsb
+		repe	cmpsb
 		je	paramok
 		stc
 		jmp	notthis
@@ -1547,7 +1547,7 @@ wipepart	proc
 		pop	eax
 		pop	es
 		ret
-		endp
+wipepart	endp
 
 ;-------------------------- Create primary ----------------------------
 
@@ -1630,7 +1630,7 @@ nopridef:	call	checkoccupied		; check if free
 		ret
 
 notoccup1:	mov	commandptr,si
-		call	get&seek		; DI - pointer to selected part
+		call	getandseek		; DI - pointer to selected part
 
 		call	fillstart		; fill starting info
 		jnc	okconv1
@@ -1681,7 +1681,7 @@ creok:		mov	writeit?,1
 formit:		call	doformat
 		ret
 
-		endp
+createprimary	endp
 
 ;--------------------------- Create extended -----------------------------
 
@@ -1700,7 +1700,7 @@ noteyet:	add	si,4
 		call	checkcolon
 		jnc	colok2
 		jmp	badpar
-colok2:		call	getfirstfree   		; get first available entry
+colok2:		call	getfirstfree		; get first available entry
 		jnc	getcreok
 		call	prgeterr
 		ret
@@ -1771,7 +1771,7 @@ noextdef:	call	checkoccupied		; check if free
 		ret
 
 notextoc:	mov	commandptr,si
-		call	get&seek		; DI - pointer to selected part
+		call	getandseek		; DI - pointer to selected part
 
 		call	fillstart
 		jnc	okconv3
@@ -1801,7 +1801,7 @@ okconv4:	call	sectorbefore
 empextok:	call	getmaxlog
 		jmp	subexit
 
-		endp
+createextended	endp
 
 ;--------------------------- Create logical --------------------------
 
@@ -1912,7 +1912,7 @@ f6oka2:		mov	writeit?,1
 formit2:	call	doformat
 		ret
 
-		endp
+createlogical	endp
 
 ;------------ Put specified partition size in environment -----------
 
@@ -1947,7 +1947,7 @@ colpsok:	call	asci2dec		; get partition number
 		call	putvariable		; put all size
 		ret
 
-                endp
+putpartsize	endp
 
 ;------------ Put specified partition type in environment -----------
 
@@ -1981,16 +1981,16 @@ colptok:	call	asci2dec		; get partition number
 		call	putvariable		; put type
 		ret
 
-                endp
+putparttype	endp
 
 ;------------ Put active partition number in environment -----------
 
 putactive	proc	near
 
                 add     si,10
-        	mov	commandptr,si
+		mov	commandptr,si
                 mov     emptyspace,3            ; search backwards for active
-		call	get&seek		; es:di => entry (for logicals too)
+		call	getandseek		; es:di => entry (for logicals too)
                 mov     eax,4
                 mov     cx,4
 @@chka:         cmp     byte ptr es:[di], 80h
@@ -2003,7 +2003,7 @@ putactive	proc	near
 		call	putvariable		; put type
 		ret
 
-                endp
+putactive	endp
 
 ;--------------------- Put ALLSIZE in environment -------------------
 
@@ -2016,7 +2016,7 @@ putallsize      proc near
 		shr	eax,11			; EAX - total size in MB
 		call	putvariable		; put all size
 		ret
-                endp
+putallsize	endp
 
 ;----------- Put specified primary partition size in environment ---------
 
@@ -2031,7 +2031,7 @@ putfreesize     proc	near
 		shr	eax,11
 		call	putvariable
                 ret
-                endp
+putfreesize	endp
 
 ;--------------------- Put NUMHDS in environment -------------------
 
@@ -2044,14 +2044,14 @@ putnumhds	proc	near
 		mov	al,numodrives
 		call	putvariable		; put numhds
 		ret
-                endp
+putnumhds	endp
 
 
 ;-------------------------- Delete a partition ---------------------------
 
 deletepart	proc near
 
-        	lea	dx,deleted	; 'sucessfully deleted'
+		lea	dx,deleted	; 'sucessfully deleted'
 		call	printstring
 
 		add	si,7
@@ -2090,7 +2090,7 @@ okdp:		dec	al
 
 @@primdeleted:	jmp	subexit
 
-		endp
+deletepart	endp
 
 
 ;------------------------ Delete active partition -------------------------
@@ -2126,7 +2126,7 @@ acdelok:	mov	commandptr,si
 		rep	stosb
 		jmp	subexit
 
-		endp
+delactpart	endp
 
 
 ;------------------------ Delete specified type ---------------------------
@@ -2152,7 +2152,7 @@ okdhex:		mov	ptype,al
 		ret
 
 okp:		mov	commandptr,si
-		call	get&seek		; DI -> entry
+		call	getandseek		; DI -> entry
 		mov	al,ptype
                 cmp     byte ptr es:[di+4],al
                 je      delit
@@ -2185,7 +2185,7 @@ notdelit:	pop	cx
 		add	di,16
 		loop	nextdel
                 jmp     subexit
-		endp
+deletetype	endp
 
 
 ;-------------------- create cvtarea.tmp file ----------------
@@ -2224,7 +2224,7 @@ createcvt       proc    near
 
                 mov     eax,startsect
 		mov	bx,bootbuffer
-       		mov	blocks,3
+		mov	blocks,3
 		call	writesectors		; write back boot sector
 		jnc	@@okbw
 		ret
@@ -2236,7 +2236,7 @@ createcvt       proc    near
 
 @@oklab:	call	patchFAT
 		ret
-                endp
+createcvt	endp
 
 ;--------------
 
@@ -2260,7 +2260,8 @@ getboot		proc
 		mov	FATsize,eax
 		clc
 @@badf:		ret
-		endp
+getboot		endp
+
 
 ;----------------
 
@@ -2277,7 +2278,7 @@ calcCVTbegin	proc
 		add	eax,4			; 4th cluster is the 1st data
 		mov	CVTbegin,eax
 		ret
-		endp
+calcCVTbegin	endp
 
 
 ;-------------------------------------------------------------
@@ -2300,7 +2301,7 @@ calcCVTsize	proc
 		inc	eax
 @@okcvtcl:	mov	CVTsize,eax		; save size in clusters
 		ret
-		endp
+calcCVTsize	endp
 
 ;------------
 
@@ -2343,12 +2344,12 @@ createentry	proc
 		mul	ebx
 		shl	eax,9
 		stosd				; file size in bytes
-		
+
 		mov	eax,sectorptr
 		mov	bx,bootbuffer
 		call	writesectors
 		ret
-		endp
+createentry	endp
 
 ;------------------------------------------------------
 
@@ -2391,7 +2392,7 @@ patchFAT	proc
 		stosd				; write EOF
 		jmp	@@wrFAT
 
-		endp
+patchFAT	endp
 
 ;---------------------- saveMBR --------------------------
 
@@ -2431,7 +2432,7 @@ dosaveMBR	proc	near
 		pop	ax
 		mov	[si],al
 		ret
-		endp
+dosaveMBR	endp
 
 ;---------------------- restoreMBR --------------------------
 
@@ -2471,7 +2472,7 @@ dorestMBR	proc	near
 		pop	ax
 		mov	[si],al
 		jmp	subexit
-		endp
+dorestMBR	endp
 
 ;---------------------- sort --------------------------
 
@@ -2531,7 +2532,7 @@ sorttable	proc	near
 		xor	bx,bx
 		call	writesectors		; write back
 		ret
-		endp
+sorttable	endp
 
 
 
@@ -2539,13 +2540,13 @@ sorttable	proc	near
 
 delallpart	proc near
 
-        	lea	dx,delalld
+		lea	dx,delalld
 		call	printstring
 
 		add	si,7
 		mov	commandptr,si
 
-        	mov	di,1beh
+		mov	di,1beh
 		mov	cx,4
 @@delall:       cmp     byte ptr es:[di+4],0
                 je      @@skdel
@@ -2568,7 +2569,7 @@ delallpart	proc near
 
 okdelalled:	jmp	subexit
 
-		endp
+delallpart	endp
 
 ;---------------------- NotDel --------------------------
 
@@ -2588,7 +2589,7 @@ nextnot:	call	asci2hex
 		jnc	okndhex
 		ret
 
-okndhex:	mov	[bx+offset notdels],al
+okndhex:	mov	notdels[bx],al
 		cmp	byte ptr [si],','
 		jne	donotdel
 		inc	bl
@@ -2601,7 +2602,7 @@ donotdel:	mov	commandptr,si
 		mov	di,1beh
 
 exanpart:	xor	bx,bx
-exannext:	mov	ah,[bx+offset notdels]
+exannext:	mov	ah,notdels[bx]
 		test	ah,ah
 		je	dellit
 		cmp	es:[di+4],ah
@@ -2633,7 +2634,7 @@ skipent:	add	di,16
 		rep	stosb			; clear types field
 		pop	es
 		jmp	subexit
-		endp
+notdelpart	endp
 
 
 ;------------------ Get boot record's absolute sector -----------------
@@ -2670,12 +2671,12 @@ nomlf:		lea	dx,badnumstr
 		call	perror
 		ret
 
-primform:	call	get&seek
+primform:	call	getandseek
 		mov	eax,es:[di+8]
 norfn:		mov	startsect,eax
 		clc
 		ret
-		endp
+getbootstart	endp
 
 
 ;ллллллллллллллллллллллллл Format FAT partition лллллллллллллллллллллллллл
@@ -2752,10 +2753,10 @@ okdoformat:	cmp	word ptr [es:bx+1feh],0aa55h
 
 		call	saveboot
 		jc	exitformat
-        	call	clearFATroot
+		call	clearFATroot
 
 exitformat:	ret
-		endp
+doformat	endp
 
 
 ;---------------------------- Fill boot info ------------------------------
@@ -2862,7 +2863,7 @@ sernumb:	xor	ah,ah
 		rep	movsb
 		pop	di
 		ret
-		endp
+calcboot	endp
 
 ;------------------------- save boot sector(s) ------------------------------
 
@@ -2898,7 +2899,7 @@ savfat16:	mov	blocks,1
 		clc
 wrerrr:		ret
 
-                endp
+saveboot	endp
 
 ;-------- calculate free clusters ------
 
@@ -2916,11 +2917,11 @@ calcfree	proc	near
 		xor	edx,edx
                 div     ebx
 		dec	eax
-		mov	es:[bootbuffer+offset freeclust-offset bootsec32],eax
+		mov	dword ptr es:[bootbuffer+offset freeclust-offset bootsec32],eax
 		mov	eax,3
-		mov	es:[bootbuffer+offset nextclust-offset bootsec32],eax
+		mov	dword ptr es:[bootbuffer+offset nextclust-offset bootsec32],eax
 @@skipif16:	ret
-		endp
+calcfree	endp
 
 ;------------------ Clear FATs and root sectors ----------
 
@@ -2999,7 +3000,7 @@ rootclear:	ret
 badrcl:         pop     cx
                 ret
 
-		endp
+clearFATroot	endp
 
 
 ;ллллллллллллллллллллллллл Get volume label ллллллллллллллллллллллллллллл
@@ -3047,7 +3048,7 @@ endlabel:	push	si
 		pop	ax
 		ret
 
-		endp
+getlabel	endp
 
 ;лллллллллллллл Create label entry in root dir лллллллллллллллллллллллллл
 
@@ -3074,7 +3075,7 @@ createlabel	proc	near
 		pop	ax
 		ret
 
-		endp
+createlabel	endp
 
 ;---------
 
@@ -3093,7 +3094,7 @@ bcd2num		proc near
 		pop	cx
 
 		ret
-		endp
+bcd2num		endp
 
 ;-------------------------------------------------------------------
 
@@ -3154,7 +3155,7 @@ filedatetime	proc	near
 		or	al,dl
 		stosw				; store date
 		ret
-		endp
+filedatetime	endp
 
 
 ;------------------ Create label on an existing partition ---------
@@ -3257,7 +3258,7 @@ okplab:		dec	al
 		call	writesectors
 		ret
 
-		endp
+makelabel	endp
 
 ;----------------- Copy boot sector back & forth -----------------------
 
@@ -3294,7 +3295,7 @@ copybootlab	proc	near
 		pop	ds
 		pop	di
 		ret
-		endp
+copybootlab	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;-------------------- Activate --------------------
@@ -3314,7 +3315,7 @@ okopt3:		call	checkdefined
 		ret
 
 okacti:		mov	commandptr,si
-		call	get&seek
+		call	getandseek
 		cmp	byte ptr es:[di],80h	; check if already active
 		je	@@alreadact
 		cmp	byte ptr es:[di+4],0	; check if empty
@@ -3336,7 +3337,7 @@ okacti:		mov	commandptr,si
 		ret
 
 
-		endp
+activatepart	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -3359,7 +3360,7 @@ okopt3a:	mov	commandptr,si
 		add	di,16
 		loop	@@clra
 		jmp	subexit
-		endp
+deactivatepart	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -3386,11 +3387,11 @@ changetypeid	proc
 		ret
 
 @@okallch:	mov	commandptr,si
-		call	get&seek		; DI -> entry
+		call	getandseek		; DI -> entry
 		mov	al,ptype
 		mov     byte ptr es:[di+4],al
 		jmp	subexit
-		endp
+changetypeid	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;----------------------------- Hide FAT -------------------------------
@@ -3414,7 +3415,7 @@ hider		proc	near
 		call	getbootstart		; get boot record
 		jnc	@@okjaj			; and extended position
 		ret
-@@okjaj:	mov 	ax,tempflag
+@@okjaj:	mov	ax,tempflag
 		lea	bx,fatntfs
 		shl	ax,1
 		add	bx,ax
@@ -3463,7 +3464,7 @@ hidenext:	call	[bx]
 skiphide:	add	di,16
 		loop	hidenext
 @@ok2hid:	jmp	subexit
-		endp
+hider		endp
 
 
 ;ллллллллллллллллллллллл Dump partition table лллллллллллллллллллллллллллл
@@ -3501,7 +3502,7 @@ dumptable	proc	near
 		call	penter
 		loop	@@dumpcol
 		ret
-		endp
+dumptable	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;----------------------------- Show partition table ------------------------
@@ -3594,7 +3595,7 @@ nologic:	clc
 badg:		stc
 		ret
 
-		endp
+showtable	endp
 
 ;-----------------------------
 printnotype	proc	near
@@ -3619,7 +3620,7 @@ printnotype	proc	near
 		mov	dl,24
 		call	setcol
 		ret
-		endp
+printnotype	endp
 
 ;-----------------------------
 
@@ -3630,7 +3631,7 @@ printpsize	proc	near
 		mov	eax,es:[di+0ch]
                 call    printsize		; print size
 		ret
-		endp
+printpsize	endp
 
 ;-----------------------------
 
@@ -3720,7 +3721,7 @@ printlabel	proc	near
 @@prvq:		pop	di
 		pop	cx
 		ret
-		endp
+printlabel	endp
 
 ;-----------------------
 
@@ -3765,7 +3766,7 @@ printntlabel	proc	near
 @@skipnt:	pop	di
 @@ntlabexit:	clc
 		ret
-		endp
+printntlabel	endp
 
 ;---------------- Set column ----------------
 
@@ -3789,7 +3790,7 @@ setcol		proc near
 		pop	cx
 		ret
 
-		endp
+setcol		endp
 
 ;ллллллллллллллллллллллл Print HD number лллллллллллллллллллллллллллллллл
 
@@ -3803,7 +3804,7 @@ printHDnum	proc near
 		int	21h
 		call	penter
 		ret
-		endp
+printHDnum	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -3829,7 +3830,7 @@ noenvend:	dec	di
 		push	si
 		push	cx
 		mov	cx,dx			; get variable length
-		rep	cmpsb			; compare
+		repe	cmpsb			; compare
 		pop	cx
 		pop	si
 		jne	noextsize		; jump if that's not ours
@@ -3848,7 +3849,7 @@ noenvend:	dec	di
 nextcp:		lodsb
 		test	al,al
 		jz	endenv?
-nextenv:	stosb	
+nextenv:	stosb
 		jmp	nextcp
 endenv?:	stosb				; store a zero
 		lodsb				; examine if next is also zero
@@ -3893,7 +3894,7 @@ notenvsp:	lea	dx,noenviron
 		pop	es
 		ret
 
-		endp
+putvariable	endp
 
 ;----------
 
@@ -3901,9 +3902,9 @@ copysize	proc	near
 ; EAX - number to store
 
 		push	edx
-		push	si		
+		push	si
 		push	di
-		mov 	di,si
+		mov	di,si
 		add	di,dx			; DI -> after the '=' string
 
 		mov	ebx,0ah
@@ -3939,7 +3940,7 @@ wrnn:		inc	cx
 		pop	edx
 		ret
 
-		endp
+copysize	endp
 
 ;------------------- find master environment table -----------------
 
@@ -3957,7 +3958,7 @@ FindEnviron	proc near
 		mov	es,ax
                 call    lookMCB
                 jnc     @@findenv
-        	mov	ah,52h
+		mov	ah,52h
 		int	21h
 		push	ds
 		lds	si,es:[bx+12h]	; get ptr to disk buffer info
@@ -3994,14 +3995,14 @@ lookMCB:	cmp	byte ptr es:[0],'Z'	; final?
 		mov	cx,7
 		lea	si,comenv	; is it "COMMAND"?
 		mov	di,8
-		rep	cmpsb
+		repe	cmpsb
                 je      @@gotMCB
 		mov	cx,4
 		lea	si,dos4env	; is it "4DOS"?
 		mov	di,8
-		rep	cmpsb
+		repe	cmpsb
 		je	@@gotMCB
-        	add	ax,es:[3]	; add MCB size and inc to
+		add	ax,es:[3]	; add MCB size and inc to
 		inc	ax		; get next MCB's segment
 		mov	es,ax
 		jmp	lookMCB
@@ -4055,8 +4056,8 @@ showpa:		call	printstring
 		call	printstring
 		call	penter
 		ret
-		
-		endp
+
+showinfo	endp
 
 ;---------------------
 
@@ -4067,7 +4068,7 @@ printCHS	proc near
 		mov	dl,'/'			; print '/'
 		int	21h
 		ret
-		endp
+printCHS	endp
 
 
 
@@ -4093,20 +4094,20 @@ subexit:	mov	writeit?,1
 		clc
 		ret
 
-		endp
+installMBR	endp
 
 ;--------------------------- Print newline --------------------------
 
 penter		proc near
 
-        	mov	ah,2
+		mov	ah,2
 		mov	dl,0dh			; print newline
 		int	21h
 		mov	dl,0ah
 		int	21h
                 ret
 
-                endp
+penter		endp
 
 ;-------------------- Correct the size based on type ---------------
 
@@ -4159,7 +4160,7 @@ sizeOK:		pop	ebx
 		pop	eax
 		ret
 
-		endp
+correctsize	endp
 
 
 ;--------
@@ -4180,10 +4181,10 @@ sizeO:		pop	dx
 		pop	ebx
 		ret
 
-                endp
+mustcorrect	endp
 
 ;--------------------- Print size in MB to cursor ------------------
- 
+
 printsize       proc	near
 ;In: EAX - number
 
@@ -4191,7 +4192,7 @@ printsize       proc	near
 		call	Dec2Ascii
                 ret
 
-                endp
+printsize	endp
 
 ;-------------------- Calc size for relative calculations --------------
 
@@ -4208,7 +4209,7 @@ calcsize	proc near
 emptys:		mov	allprisize,eax
 		ret
 
-                endp
+calcsize	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;---------------------- Get max logical size  -----------------------
@@ -4244,7 +4245,7 @@ calclog:	mov	ebx,es:[di+8]		; get end of last logical
 		add	ebx,extendstart
 		jmp	gotlogs
 
-		endp
+getmaxlog	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -4263,7 +4264,7 @@ checkrelsize	proc near
 validsize:	clc
 		ret
 
-		endp
+checkrelsize	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;------------------- Check if extended exists or not -------------------
@@ -4292,7 +4293,7 @@ notfext:	pop	di
 		pop	ax
 		ret
 
-		endp
+checkextended	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -4317,14 +4318,14 @@ okpnumx:	mov	emptyspace,al
 		clc
 		ret
 
-		endp
+checkdefined	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;------------------------ Check if defined occupied -----------------------
 
 checkoccupied	proc near
 
-		call	get&seek		; DI - pointer to selected part
+		call	getandseek		; DI - pointer to selected part
 		cmp	byte ptr es:[di+4],0	; check if occupied
 		jz	nodef
 
@@ -4335,7 +4336,7 @@ checkoccupied	proc near
 nodef:		clc
 		ret
 
-                endp
+checkoccupied	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -4350,7 +4351,7 @@ calcrel         proc near
 		push	ecx
 		push	edx
 		and	eax,0ffffh
-        	xor	edx,edx
+		xor	edx,edx
 		mul	ebx
 		mov	ecx,100
 		div	ecx
@@ -4359,7 +4360,7 @@ calcrel         proc near
 		pop	ebx
                 ret
 
-                endp
+calcrel		endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;--------------------- Read main extended partition table --------------
@@ -4381,7 +4382,7 @@ findex:		mov	al,byte ptr es:[si]
 		je	thisise
 		inc	ah
 		add	si,16
-		loop	findex		
+		loop	findex
 
 thisise:	mov	al,16
 		mul	ah
@@ -4408,7 +4409,7 @@ fillfather:	call	checksignature
 @@exma:		pop	si
 		ret
 
-		endp
+getmainextended	endp
 
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
@@ -4496,7 +4497,7 @@ wemp:		call	fill0boot
 
 empextok2:	jmp	followchain
 
-		endp
+getlastextend	endp
 
 ;----------------------- Get next embedded extended ---------------------
 
@@ -4535,7 +4536,7 @@ badload:	pop	cx
 		pop	di
 		ret
 
-		endp
+getnextext	endp
 
 ;----------------------- Fill starting info -----------------------------
 
@@ -4551,7 +4552,7 @@ nonz:		mov	byte ptr es:[di+1],dh	; set starting head
 		mov	byte ptr es:[di+3],ch	; cylinder
 		clc
                 ret
-                endp
+fillstart	endp
 
 ;--------- Calculate ending adjusted to cylinder boundary ------------------
 
@@ -4593,7 +4594,7 @@ toolarge:	lea	dx,toobig
 oklarge:        clc
                 ret
 
-                endp
+calcend		endp
 
 ;----------------------- Fill ending cylinder info -------------------
 
@@ -4612,18 +4613,18 @@ zeroeend:	mov	byte ptr es:[di+6],cl	; sector
 		clc
 		ret
 
-		endp
+fillend		endp
 
 ;------------------- Calculate sectors before partition -----------------
 
 sectorbefore    proc near
-		
+
 		mov	eax,startsect	; EAX - starting cylinder
 		mov	es:[di+8],eax	; setting preceeding sector number
 
 	        ret
 
-                endp
+sectorbefore	endp
 
 ;---------------------- Calculate sectors in partition -----------------
 sectorin        proc near
@@ -4634,7 +4635,7 @@ sectorin        proc near
 		mov	es:[di+0ch],eax	; setting num of sectors entry
 		ret
 
-                endp
+sectorin	endp
 
 
 ;---------------------- Activate selected entry ----------------------
@@ -4657,7 +4658,7 @@ clrnext:	mov	byte ptr es:[di],al
 		mov	byte ptr es:[di],80h	; activate the selected
 		ret
 
-		endp
+activateit	endp
 
 
 
@@ -4671,7 +4672,7 @@ prgeterr	proc
 nospac:		lea	dx,nospace
 per:		call	perror
 		ret
-		endp
+prgeterr	endp
 
 ;--------------------------- Warning msg --------------------------
 
@@ -4682,14 +4683,14 @@ pwarning	proc
 		pop	dx
 		call	printstring
 		ret
-		endp
+pwarning	endp
 
 ;--------------------------- Check CPU type --------------------------
 
 check_CPU	proc near
 ;Out: AL - type (086, 286, 386, 386
 		pushf			; push original FLAGS
-		pop	ax 		; get original FLAGS
+		pop	ax		; get original FLAGS
 		mov	cx,ax		; save original FLAGS
 		and	ax,0fffh	; clear bits 12-15 in FLAGS
 		push    ax              ; save new FLAGS value on stack
@@ -4762,7 +4763,7 @@ check_80486:
 		mov	al,4
 		ret
 
-		endp
+check_CPU	endp
 
 ;------------------------------------------------------------------
 
@@ -4782,7 +4783,7 @@ checkNT		proc
 		int	16h
 		stc
 		ret
-		endp
+checkNT		endp
 
 ;--------------------------- Allocate memory ----------------------------
 
@@ -4829,7 +4830,7 @@ freemem         proc	near
 		pop	ax
 		popf
 		ret
-                endp
+freemem		endp
 
 ;---------------------------- Check EBIOS ----------------------------
 
@@ -4876,7 +4877,7 @@ okebios:	pop	si
 		pop	bx
 		pop	ax
 		ret
-		endp
+ebios_check	endp
 
 ;ллллллллллллллллллллллл Calculate CHS from LBA ллллллллллллллллллллллллл
 
@@ -4908,7 +4909,7 @@ noaboveCHS:	push	eax
 		mov	cx,ax			; CX - cylinder
 		cmp	cx,1023			; correct if above
 		jbe	dontccyl		;  1023 cyls
-        	mov	cx,1023
+		mov	cx,1023
 dontccyl:	xchg	ch,cl
 		shl	cl,6
 		mov	eax,edx			; then divide the remainder
@@ -4923,7 +4924,7 @@ dontccyl:	xchg	ch,cl
 		pop	eax
 		ret
 
-		endp
+LBA2CHS		endp
 
 
 ;ллллллллллллллллллллллллллллл Get sectors ллллллллллллллллллллллллллл
@@ -5049,7 +5050,7 @@ lockvolume	proc
 		pop	bx
 		pop	ax
 @@dontlock:	ret
-		endp
+lockvolume	endp
 
 ;------------------------- Unlock volume ---------------------------
 unlockvolume	proc
@@ -5071,7 +5072,7 @@ unlockvolume	proc
 
 @@dontunlock:	popf
 		ret
-		endp
+unlockvolume	endp
 
 
 
@@ -5099,7 +5100,7 @@ checkifFAT	proc
 ok2hid:		clc
 @@gotifat:	pop	ax
 		ret
-		endp
+checkifFAT	endp
 
 ;---------------------- Check if hidden FAT --------------------
 
@@ -5126,7 +5127,7 @@ checkifHFAT	proc	near
 ok2unhid:	clc
 @@unhex:	pop	ax
 		ret
-		endp
+checkifHFAT	endp
 
 
 ;---------------------- Check if NTFS --------------------
@@ -5144,7 +5145,7 @@ checkifNTFS	proc	near
 @@ecnt:		pop	ax
 		ret
 
-		endp
+checkifNTFS	endp
 
 
 ;---------------------- Check if hidden NTFS --------------------
@@ -5161,7 +5162,7 @@ checkifHNTFS	proc	near
 ok2unhidnt:	clc
 @@ecunt:	pop	ax
 		ret
-		endp
+checkifHNTFS	endp
 
 
 ;------------------------ FAT16 or FAT32 -----------------------
@@ -5186,7 +5187,7 @@ FAT16orFAT32	proc	near
 @@32lab:	stc
 @@exfof:	pop	ax
 		ret
-		endp
+FAT16orFAT32	endp
 
 ;------------------------ check double colon -------------------------
 
@@ -5201,7 +5202,7 @@ checkcolon	proc near
 
 badcolon:	stc
 		ret
-		endp
+checkcolon	endp
 
 ;------------- skips spaces and returns first non-whitespace ------------
 
@@ -5260,7 +5261,7 @@ wrn:		mov	dx,si
 		pop	eax
 		ret
 
-		endp	Dec2Ascii
+Dec2Ascii	endp
 
 ;-------------- Convert to ASCII hexa and print at cursor ---------------
 
@@ -5287,7 +5288,7 @@ Hex2Ascii	proc	near
 		pop	ax
 		ret
 
-		endp	Hex2Ascii
+Hex2Ascii	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;------------------------------ ASCII to hex ----------------------------
@@ -5330,7 +5331,7 @@ endhexa:	or	al,ah
 		xor	ah,ah
 		clc
 		ret
-		endp
+asci2hex	endp
 
 ;лллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллл
 ;------------------------- ASCII to dec -----------------------------
@@ -5374,7 +5375,7 @@ gooddec:	push	ebx
 		pop	ecx
 		pop	ebx
 		ret
-		endp
+asci2dec	endp
 
 
 ;--------------------------- Error msg --------------------------
@@ -5388,7 +5389,7 @@ perror		proc
 		call	printstring
 		stc
 		ret
-		endp
+perror	endp
 
 ;---------------- Fill boot buffer with F6 values ----------------------
 fillF6boot	proc
@@ -5403,7 +5404,7 @@ fillF6boot	proc
 		pop	cx
 		pop	ax
 		ret
-		endp
+fillF6boot		endp
 
 ;----------------- Fill boot buffer with 00 values ---------------------
 
@@ -5419,7 +5420,7 @@ fill0boot	proc
 		pop	cx
 		pop	ax
 		ret
-		endp
+fill0boot	endp
 
 ;------------------------ Print string -----------------
 
@@ -5429,7 +5430,7 @@ printstring	proc	near
 		int	21h
 		pop	ax
 		ret
-		endp
+printstring	endp
 
 
 ;*****
@@ -5480,7 +5481,7 @@ okproc:		mov	bx,200h
 		mov	ah,0dh		; flush disk
 		int	21h
 
-        	mov	ax,40h		; set ES to BIOS data segment
+		mov	ax,40h		; set ES to BIOS data segment
 		mov	es,ax
 
 		mov	di,17h		; simulate CTRL-ALT-DEL first
@@ -5519,7 +5520,7 @@ noparams:	mov	ax,_DATA
 		jmp	gexit
 
 _aefdisk	endp
-		ends
+_TEXT		ends
 		end	_aefdisk
 
 ;===============================End of program================================
