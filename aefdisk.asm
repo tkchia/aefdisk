@@ -495,7 +495,7 @@ commandline	proc near
 		xor	ch,ch
 		mov	cl,byte ptr [si]	; CX - get command lenght
 		inc	si
-		lea	di,commandbuffer
+		mov	di,offset commandbuffer
 		rep	movsb			; copy commands
 		push	es
 		pop	ds			; DS points to data
@@ -513,7 +513,7 @@ commandline	proc near
 		jne	notw95
 		mov	win95?,1
 
-notw95:		lea	si,commandbuffer
+notw95:		mov	si,offset commandbuffer
 		call    skipwhite
 		cmp	al,'?'			; usage info?
 		je	prusage
@@ -528,15 +528,15 @@ notw95:		lea	si,commandbuffer
 		cmp	al,' '
 		jb	prusage
 
-badparam:	lea	dx,badparamstr		; bad parameter message
+badparam:	mov	dx,offset badparamstr	; bad parameter message
 		call	perror
                 ret
 
-prusage:	lea	dx,usage		; print usage info
+prusage:	mov	dx,offset usage		; print usage info
 		call	printstring
 		mov	ah,8
 		int	21h
-		lea	dx,switche
+		mov	dx,offset switche
 		call	printstring
 		clc
 		ret
@@ -551,7 +551,7 @@ HDnumber:	mov	ah,numodrives		; check if HD number is
 		cmp	al,ah			; jump if OK
 		jbe	existHD
 
-		lea	dx,hdnotex		; error is no HD with that
+		mov	dx,offset hdnotex	; error is no HD with that
 		call	perror
 		ret
 
@@ -581,7 +581,7 @@ notwc:		mov	cl,1
 		je	sken			; skip enter if only 1 HD
 		call	penter			; print newline
 sken:		inc	actualHD		; jump to next HD and
-		lea	si,commandbuffer	; restore command line
+		mov	si,offset commandbuffer	; restore command line
 		call	skipwhite		; pointer to the
 		cmp	al,'/'			; proper place
 		je	noneedskip
@@ -642,7 +642,7 @@ examcommand:	mov	si,commandptr
 		call	skipwhite
 
 		mov	cx,4
-		lea	di,pri
+		mov	di,offset pri
 		call	examcom			; primary?
 		jc	notpri
 		call	createprimary
@@ -650,7 +650,7 @@ examcommand:	mov	si,commandptr
 		ret
 
 notpri:		mov	cx,4
-		lea	di,ext
+		mov	di,offset ext
 		call	examcom			; extended?
 		jc	notext
 		call	createextended
@@ -658,7 +658,7 @@ notpri:		mov	cx,4
 		ret
 
 notext:		mov	cx,4
-		lea	di,log
+		mov	di,offset log
 		call	examcom			; logical?
 		jc	notlog
 		call	createlogical
@@ -667,7 +667,7 @@ notext:		mov	cx,4
 
 notlog:
 		mov	cx,4
-		lea	di,rel
+		mov	di,offset rel
 		call	examcom
 		jc	notrel			; relative?
 		add	si,4
@@ -679,7 +679,7 @@ notlog:
 		jmp	examcommand
 notrel:
 		mov	cx,7
-		lea	di,delete
+		mov	di,offset delete
 		call	examcom
 		jc	notdelete		; delete?
 		call	deletepart
@@ -687,7 +687,7 @@ notrel:
 		ret
 
 notdelete:	mov	cx,7
-		lea	di,delactive
+		mov	di,offset delactive
 		call	examcom
 		jc	notdelact		; delete?
 		call	delactpart
@@ -698,7 +698,7 @@ notdelete:	mov	cx,7
 
 notdelact:
 		mov	cx,8
-		lea	di,deltype
+		mov	di,offset deltype
 		call	examcom			; deltype?
 		jc	notdeltype
 		call	deletetype
@@ -706,7 +706,7 @@ notdelact:
 		ret
 
 notdeltype:	mov	cx,8
-		lea	di,cvtarea
+		mov	di,offset cvtarea
 		call	examcom			; cvtarea?
 		jc	@@nocvt
 		call	createcvt
@@ -715,7 +715,7 @@ notdeltype:	mov	cx,8
 
 @@nocvt:
 		mov	cx,7
-		lea	di,delall
+		mov	di,offset delall
 		call	examcom
 		jc	notdelall		; delall?
 		call	delallpart
@@ -723,7 +723,7 @@ notdeltype:	mov	cx,8
 		ret
 
 notdelall:	mov	cx,7
-		lea	di,notdel
+		mov	di,offset notdel
 		call	examcom
 		jc	notnotdel		; notdel?
 		call	notdelpart
@@ -731,7 +731,7 @@ notdelall:	mov	cx,7
 		ret
 
 notnotdel:	mov	cx,9
-		lea	di,activate
+		mov	di,offset activate
 		call	examcom
 		jc	notactivate		; activate?
 		call	activatepart
@@ -739,7 +739,7 @@ notnotdel:	mov	cx,9
 		ret
 
 notactivate:	mov	cx,11
-		lea	di,deactivate
+		mov	di,offset deactivate
 		call	examcom
 		jc	notdeactivate		; deactivate?
 		call	deactivatepart
@@ -747,7 +747,7 @@ notactivate:	mov	cx,11
 		ret
 
 notdeactivate:	mov	cx,11
-		lea	di,changetype
+		mov	di,offset changetype
 		call	examcom			; changetype?
 		jc	@@nochtype
 		call	changetypeid
@@ -755,51 +755,51 @@ notdeactivate:	mov	cx,11
 		ret
 
 @@nochtype:	mov	cx,8
-		lea	di,hidep
+		mov	di,offset hidep
 		call	examcom			; hide FAT?
 		jc	nothide
 		add	si,8
 		mov	tempflag,0
-		lea	dx,hiddened
+		mov	dx,offset hiddened
 		call	hider
 		jnc	examcomm
 		ret
 
 nothide:	mov	cx,10
-		lea	di,unhide
+		mov	di,offset unhide
 		call	examcom
 		jc	notunhide		; unhide FAT?
 		add	si,10
 		mov	tempflag,1
-		lea	dx,unhidden
+		mov	dx,offset unhidden
 		call	hider
 		jnc	examcomm
 		ret
 
 notunhide:	mov	cx,7
-		lea	di,hidentp
+		mov	di,offset hidentp
 		call	examcom			; hide NTFS?
 		jc	nothident
 		add	si,7
 		mov	tempflag,2
-		lea	dx,hiddenednt
+		mov	dx,offset hiddenednt
 		call	hider
 		jnc	examcomm
 		ret
 
 nothident:	mov	cx,9
-		lea	di,unhident
+		mov	di,offset unhident
 		call	examcom
 		jc	notunhident		; unhide NTFS?
 		add	si,9
 		mov	tempflag,3
-		lea	dx,unhiddennt
+		mov	dx,offset unhiddennt
 		call	hider
 		jnc	examcomm
 		ret
 
 notunhident:	mov	cx,5
-		lea	di,show
+		mov	di,offset show
 		call	examcom			; show?
 		jc	notshow
 		call	showtable
@@ -807,7 +807,7 @@ notunhident:	mov	cx,5
 		ret
 
 notshow:	mov	cx,6
-		lea	di,labello
+		mov	di,offset labello
 		call	examcom			; label?
 		jc	notlabel
 		call	makelabel
@@ -815,7 +815,7 @@ notshow:	mov	cx,6
 		ret
 
 notlabel:	mov	cx,5
-		lea	di,dump
+		mov	di,offset dump
 		call	examcom			; dump?
 		jc	notdump
 		call	dumptable
@@ -823,7 +823,7 @@ notlabel:	mov	cx,5
 		ret
 
 notdump:	mov	cx,5
-		lea	di,info
+		mov	di,offset info
 		call	examcom			; info?
 		jc	notinfo
 		call	showinfo
@@ -831,7 +831,7 @@ notdump:	mov	cx,5
 		ret
 
 notinfo:	mov	cx,10
-		lea	di,formatfat
+		mov	di,offset formatfat
 		call	examcom
 		jc	notformat
 		cmp	byte ptr [si+10],':'
@@ -846,7 +846,7 @@ speciffor:	mov	format?,0
 		ret
 
 notformat:	mov	cx,5
-		lea	di,sort
+		mov	di,offset sort
 		call	examcom			; sort?
 		jc	notsort
 		add	si,5
@@ -856,7 +856,7 @@ notformat:	mov	cx,5
 		ret
 
 notsort:	mov	cx,8
-		lea	di,dynamic
+		mov	di,offset dynamic
 		call	examcom			; Win2000/XP?
 		jc	@@notw2k
 		mov	dynamic?,1
@@ -865,7 +865,7 @@ notsort:	mov	cx,8
 		jmp	examcomm
 
 @@notw2k:	mov	cx,2
-		lea	di,yes			; yes? skip it
+		mov	di,offset yes		; yes? skip it
 		call	examcom
 		jc	@@notyes
 		add	si,2
@@ -873,7 +873,7 @@ notsort:	mov	cx,8
 		jmp	examcomm
 
 @@notyes:	mov	cx,7
-		lea	di,reboot
+		mov	di,offset reboot
 		call	examcom			; reboot?
 		jc	notreboot
 		mov     reboot?,1
@@ -882,7 +882,7 @@ notsort:	mov	cx,8
 		jmp	examcomm
 
 notreboot:	mov	cx,5
-		lea	di,wipe
+		mov	di,offset wipe
 		call	examcom			; wipe?
 		jc	@@notwipe
 		mov	wipe?,1
@@ -891,7 +891,7 @@ notreboot:	mov	cx,5
 		jmp	examcomm
 
 @@notwipe:	mov	cx,8
-		lea	di,noebios
+		mov	di,offset noebios
 		call	examcom			; disable EBIOS?
 		jc	notnoeb
 		mov	ebios,0
@@ -914,7 +914,7 @@ noebcy:		add	si,8
 		jmp	examcommand
 
 notnoeb:	mov	cx,8
-		lea	di,nolimit
+		mov	di,offset nolimit
 		call	examcom
 		jc	notnolim
 		mov	nofatlimit?,1		; no FAT limit?
@@ -923,7 +923,7 @@ notnoeb:	mov	cx,8
 		jmp	examcommand
 
 notnolim:	mov	cx,8
-		lea	di,putsig
+		mov	di,offset putsig
 		call	examcom
 		jc	notputs			; put all size?
                 call    putallsize
@@ -931,7 +931,7 @@ notnolim:	mov	cx,8
                 ret
 
 notputs:	mov	cx,9
-		lea	di,putfree
+		mov	di,offset putfree
 		call	examcom
 		jc	nofreesize		; put free size?
                 call    putfreesize
@@ -939,7 +939,7 @@ notputs:	mov	cx,9
 		ret
 
 nofreesize:	mov	cx,7
-		lea	di,numhds		; put numhds?
+		mov	di,offset numhds		; put numhds?
 		call	examcom
 		jc	nonumhds
 		call	putnumhds
@@ -947,7 +947,7 @@ nofreesize:	mov	cx,7
 		ret
 
 nonumhds:	mov	cx,6
-		lea	di,partsize
+		mov	di,offset partsize
 		call	examcom
 		jc	@@nopsizes		; put partition sizes
 		call	putpartsize
@@ -955,7 +955,7 @@ nonumhds:	mov	cx,6
 		ret
 
 @@nopsizes:	mov	cx,6
-		lea	di,parttype
+		mov	di,offset parttype
 		call	examcom
 		jc	@@noptypes		; put primary partition type
 		call	putparttype
@@ -963,7 +963,7 @@ nonumhds:	mov	cx,6
 		ret
 
 @@noptypes:	mov	cx,10
-		lea	di,pactive
+		mov	di,offset pactive
 		call	examcom
 		jc	@@nopactive		; put active partition nr.
 		call	putactive
@@ -971,7 +971,7 @@ nonumhds:	mov	cx,6
 		ret
 
 @@nopactive:	mov	cx,5
-		lea	di,save
+		mov	di,offset save
 		call	examcom
 		jc	nosaveMBR
 		call	dosaveMBR		; save MBR to file?
@@ -979,7 +979,7 @@ nonumhds:	mov	cx,6
 		ret
 
 nosaveMBR:	mov	cx,8
-		lea	di,restore
+		mov	di,offset restore
 		call	examcom
 		jc	norestMBR		; restore MBR from file?
 		call	dorestMBR
@@ -987,7 +987,7 @@ nosaveMBR:	mov	cx,8
 		ret
 
 norestMBR:	mov	cx,4
-		lea	di,mbrsig
+		mov	di,offset mbrsig
 		call	examcom
 		jc	quitparse		; new MBR?
 		call	installMBR
@@ -1009,7 +1009,7 @@ nomoreparam:    cmp     writeit?,0
 		jnc	exitmsg
 		ret
 
-exitmsg:	lea	dx,savedMBR
+exitmsg:	mov	dx,offset savedMBR
 		call	printstring
 
 skipwnew:       mov     writeit?,0
@@ -1110,7 +1110,7 @@ checksignature	proc	near
 		cmp	word ptr es:[bx+510],0aa55h
 		je	@@goodsig
 		mov	word ptr es:[bx+510],0aa55h
-		lea	dx,badsignature
+		mov	dx,offset badsignature
 		call	pwarning
 		stc
 		jmp	@@badsig
@@ -1125,7 +1125,7 @@ checksignature	endp
 errno		proc near
 
 		push	ax
-		lea	dx,errcode
+		mov	dx,offset errcode
 		call	printstring
 		xor	eax,eax
 		pop	ax
@@ -1141,7 +1141,7 @@ errno		endp
 
 tolower		proc near
 
-		lea	si,commandbuffer-1
+		mov	si,offset commandbuffer-1
 nextchar:	inc	si
 		mov	al,[si]
 		cmp	al,' '
@@ -1209,7 +1209,7 @@ noparterr:	pop	cx
 conterr:	clc
 		ret
 
-parterror:	lea	dx,parterrmsg
+parterror:	mov	dx,offset parterrmsg
 		call	printstring
 		cmp	yes?,1
 		jne	@@getkeyf
@@ -1325,7 +1325,7 @@ getfirstfree	proc near
 		push	si
 		push	di
 		mov	di,1beh
-		lea	si,sortsect
+		mov	si,offset sortsect
 		mov	eax,sectors
 		dec	eax
 		mov	[si],eax		; the first pseudo partition
@@ -1367,7 +1367,7 @@ emptyentry:	add	di,16
 
 sortagain:	push	cx
 		mov	cx,bx
-		lea	si,sortsect
+		mov	si,offset sortsect
 
 sortnext:	mov	eax,[si]		; get starting
 		cmp	eax,[si+8]		; compare with next starting
@@ -1449,7 +1449,7 @@ findlargest	proc near
 
 		mov	cx,bx
 		inc	cx			; because we inserted a zero
-		lea	si,sortsect+4		; partiton at the beginning
+		mov	si,offset sortsect+4	; partiton at the beginning
 
 findlarge:	mov	edx,endsect
 		sub	edx,startsect
@@ -1553,14 +1553,14 @@ wipepart	endp
 
 createprimary	proc near
 
-		lea	dx,created
+		mov	dx,offset created
 		call	printstring
 
 		add	si,4
 		call	checkcolon
 		jnc	colok1
 
-badpar:		lea	dx,badparamstr
+badpar:		mov	dx,offset badparamstr
 		call	perror
 		ret
 
@@ -1599,7 +1599,7 @@ calcedp:	mov	psize,eax		; store size in sectors
 		call	checkcolon		; get type
 		jnc	coltok
 
-baddef:		lea	dx,badtypestr
+baddef:		mov	dx,offset badtypestr
 		call	perror
 		ret
 
@@ -1612,7 +1612,7 @@ okphex:		cmp	al,5			; check if type is extended
 		je	nokgoon
 		jmp	okgoon
 
-nokgoon:	lea	dx,useext		; error if yes
+nokgoon:	mov	dx,offset useext		; error if yes
 		call	perror
 		ret
 
@@ -1656,7 +1656,7 @@ oksize:		mov	endsect,eax
 		jne	@@oktyp8g
 		mov	al,0eh
 @@correctyp:	mov	ptype,al
-		lea	dx,cinstead
+		mov	dx,offset cinstead
 		call	pwarning
 		clc
 @@oktyp8g:	call	fillend			; fill ending info
@@ -1687,12 +1687,12 @@ createprimary	endp
 
 createextended	proc	near
 
-		lea	dx,created
+		mov	dx,offset created
 		call	printstring
 
 		call	checkextended		; check if already exists
 		jc	noteyet
-		lea	dx,extalready
+		mov	dx,offset extalready
 		call	perror
 		ret
 
@@ -1807,13 +1807,13 @@ createextended	endp
 
 createlogical	proc near
 
-		lea	dx,created
+		mov	dx,offset created
 		call	printstring
 
 		call	checkextended		; check if ext exists
 		jnc	exexist
 
-		lea	dx,noextended		; error if no
+		mov	dx,offset noextended	; error if no
 		call	perror
 		ret
 
@@ -1939,7 +1939,7 @@ colpsok:	call	asci2dec		; get partition number
 		aaa
 		xchg	al,ah
 		add	ax,3030h
-		lea	si,psenv		; SI - environment variable
+		mov	si,offset psenv		; SI - environment variable
 		mov	[si+5],ax
 		mov	dx,8			; variable length
 		mov	eax,es:[di+12]
@@ -1974,7 +1974,7 @@ colptok:	call	asci2dec		; get partition number
 		aaa
 		xchg	al,ah
 		add	ax,3030h
-		lea	si,ptenv		; SI - environment variable
+		mov	si,offset ptenv		; SI - environment variable
 		mov	[si+5],ax
 		mov	dx,8			; variable length
 		movzx	eax,byte ptr es:[di+4]
@@ -1998,7 +1998,7 @@ putactive	proc	near
                 dec     al
                 sub     di,16
                 loop    @@chka
-@@gota:		lea	si,actenv		; SI - environment variable
+@@gota:		mov	si,offset actenv	; SI - environment variable
 		mov	dx,7			; variable length
 		call	putvariable		; put type
 		ret
@@ -2010,7 +2010,7 @@ putactive	endp
 putallsize      proc near
 		add	si,8
 		mov	commandptr,si
-		lea	si,allenv		; SI - environment variable
+		mov	si,offset allenv	; SI - environment variable
 		mov	dx,8			; variable length
 		mov	eax,etotal
 		shr	eax,11			; EAX - total size in MB
@@ -2025,7 +2025,7 @@ putfreesize     proc	near
 		mov	commandptr,si
 		call	getfirstfree
 		call	calcsize
-		lea	si,freenv
+		mov	si,offset freenv
 		mov	dx,9			; variable length
 		mov	eax,allprisize
 		shr	eax,11
@@ -2038,7 +2038,7 @@ putfreesize	endp
 putnumhds	proc	near
 		add	si,7
 		mov	commandptr,si
-		lea	si,numhdsenv		; SI - environment variable
+		mov	si,offset numhdsenv	; SI - environment variable
 		mov	dx,7			; variable length
 		xor	eax,eax
 		mov	al,numodrives
@@ -2051,7 +2051,7 @@ putnumhds	endp
 
 deletepart	proc near
 
-		lea	dx,deleted	; 'sucessfully deleted'
+		mov	dx,offset deleted	; 'sucessfully deleted'
 		call	printstring
 
 		add	si,7
@@ -2097,7 +2097,7 @@ deletepart	endp
 
 delactpart	proc near
 
-		lea	dx,deleted	; 'sucessfully deleted'
+		mov	dx,offset deleted	; 'sucessfully deleted'
 		call	printstring
 
 		add	si,10
@@ -2133,7 +2133,7 @@ delactpart	endp
 
 deletetype	proc near
 
-		lea	dx,deleted	; 'sucessfully deleted'
+		mov	dx,offset deleted	; 'sucessfully deleted'
 		call	printstring
 
 		add	si,8
@@ -2192,7 +2192,7 @@ deletetype	endp
 
 createcvt       proc    near
 
-		lea	dx,S_cvtarea		; print message
+		mov	dx,offset S_cvtarea	; print message
 		call	printstring
 
 		add	si,8
@@ -2252,7 +2252,7 @@ getboot		proc
 		mov	eax,'3TAF'
 		cmp	dword ptr es:[offset bootbuffer+52h],eax
 		je	@@valid32
-		lea	dx,S_cvtareae
+		mov	dx,offset S_cvtareae
 		call	perror
 		ret
 
@@ -2316,7 +2316,7 @@ createentry	proc
 		mov	bx,bootbuffer
 		call	getsectors		; read root directory
 
-		lea	si,cvtname
+		mov	si,offset cvtname
 		mov	di,bx
 		mov	cx,16			; 16 entry in the first sector
 @@findd:	cmp	byte ptr es:[di],0	; first an empty
@@ -2398,7 +2398,7 @@ patchFAT	endp
 
 dosaveMBR	proc	near
 
-		lea	dx,saveMBR
+		mov	dx,offset saveMBR
 		call	printstring
 
 		add	si,5
@@ -2438,7 +2438,7 @@ dosaveMBR	endp
 
 dorestMBR	proc	near
 
-		lea	dx,restMBR
+		mov	dx,offset restMBR
 		call	printstring
 
 		add	si,8
@@ -2478,7 +2478,7 @@ dorestMBR	endp
 
 sorttable	proc	near
 
-		lea	dx,S_sorting
+		mov	dx,offset S_sorting
 		call	printstring
 
 		mov	di,bootbuffer
@@ -2540,7 +2540,7 @@ sorttable	endp
 
 delallpart	proc near
 
-		lea	dx,delalld
+		mov	dx,offset delalld
 		call	printstring
 
 		add	si,7
@@ -2575,7 +2575,7 @@ delallpart	endp
 
 notdelpart	proc near
 
-		lea	dx,deleted
+		mov	dx,offset deleted
 		call	printstring
 
 		add	si,7
@@ -2630,7 +2630,7 @@ skipent:	add	di,16
 		push	ds
 		pop	es
 		mov	cx,20
-		lea	di,notdels
+		mov	di,offset notdels
 		rep	stosb			; clear types field
 		pop	es
 		jmp	subexit
@@ -2648,7 +2648,7 @@ getbootstart	proc	near
 		call	checkextended
 		jnc	readfex
 
-		lea	dx,noextended
+		mov	dx,offset noextended
 		call	perror
 		ret
 
@@ -2667,7 +2667,7 @@ firsfl:		mov	eax,extendstart
 		add	eax,es:[di+8]
 		jmp	norfn
 
-nomlf:		lea	dx,badnumstr
+nomlf:		mov	dx,offset badnumstr
 		call	perror
 		ret
 
@@ -2683,7 +2683,7 @@ getbootstart	endp
 
 doformat	proc	near
 
-		lea	dx,formatted
+		mov	dx,offset formatted
 		call	printstring
 
 		cmp	format?,1
@@ -2737,7 +2737,7 @@ bfrm:		cmp	format?,1
 		clc
 		je	noferr
 
-		lea	dx,notfatf
+		mov	dx,offset notfatf
 		call	perror
 noferr:		ret
 
@@ -2855,9 +2855,9 @@ sernumb:	xor	ah,ah
 
                 cmp     ffat32?,0
                 je      @@copy16
-		lea	si,bootsec32
+		mov	si,offset bootsec32
                 jmp     @@copyit
-@@copy16:	lea	si,bootsec16
+@@copy16:	mov	si,offset bootsec16
 @@copyit:	mov	di,bootbuffer
 		mov	cx,512*3		; copy boot sector
 		rep	movsb
@@ -2936,12 +2936,12 @@ clearFATroot	proc near
                 cmp     ffat32?,0
                 jz      fat16fill               ; write FAT signature
 
-                lea     si,FAT32sig
+		mov	si,offset FAT32sig
                 mov     cx,12
                 rep     movsb
                 jmp     beginclearFAT
 
-fat16fill:	lea	si,FAT16sig
+fat16fill:	mov	si,offset FAT16sig
 		mov	cx,4
 		rep	movsb
 
@@ -3013,14 +3013,14 @@ getlabel	proc	near
 		push	di
 		push	es
 
-		lea	di,vollabel
+		mov	di,offset vollabel
 		mov	cx,11
 		push	ds
 		pop	es
 		mov	al,' '			; clear label
 		rep	stosb
 
-		lea	di,vollabel
+		mov	di,offset vollabel
 		xor	bx,bx
 nextch:		lodsb
 		cmp	al,' '
@@ -3037,8 +3037,8 @@ okcopy:		mov	ds:[di+bx],al		; copy character
 		jb	nextch
 
 endlabel:	push	si
-		lea	si,vollabel
-		lea	di,vollabel32
+		mov	si,offset vollabel
+		mov	di,offset vollabel32
 		mov	cx,11			; copy to FAT32 too
 		rep	movsb
 		pop	si
@@ -3063,7 +3063,7 @@ createlabel	proc	near
 		push	si
 		push	di
 		mov	cx,11
-		lea	si,vollabel		; copy name
+		mov	si,offset vollabel	; copy name
 		rep	movsb
 		mov	al,28h
 		stosb
@@ -3162,7 +3162,7 @@ filedatetime	endp
 
 makelabel	proc	near
 
-		lea	dx,labelled		; print message
+		mov	dx,offset labelled	; print message
 		call	printstring
 
 		add	si,6
@@ -3192,7 +3192,7 @@ okplab:		dec	al
 
 @@getlabs:	call	checkifFAT
 		jnc	@@fatlabe		; accept only FAT
-		lea	dx,notFAT
+		mov	dx,offset notFAT
 		call	perror
 		ret
 
@@ -3204,7 +3204,7 @@ okplab:		dec	al
 
 @@oklgs:	call	checksignature		; check if formatted
 		jnc	@@formlab
-		lea	dx,S_skiplabel
+		mov	dx,offset S_skiplabel
 		call	perror
 		ret
 
@@ -3248,7 +3248,7 @@ okplab:		dec	al
 		je	@@gotlabspac
 @@skiptlab:	add	si,32
 		loop	@@chklabn
-		lea	dx,S_nospacelab
+		mov	dx,offset S_nospacelab
 		call	perror
 		ret
 
@@ -3270,7 +3270,7 @@ copybootlab	proc	near
 
 		push	di
 		mov	cx,11
-		lea	si,vollabel
+		mov	si,offset vollabel
 		call	FAT16orFAT32
 		mov	di,bx
 		jnc	@@ezf16
@@ -3287,9 +3287,9 @@ copybootlab	proc	near
 		mov	cx,512
 		mov	si,bx
 		jc	@@cop32
-		lea	di,bootsec16
+		mov	di,offset bootsec16
 		jmp	@@coppit
-@@cop32:	lea	di,bootsec32
+@@cop32:	mov	di,offset bootsec32
 @@coppit:	rep	movsb
 		pop	es
 		pop	ds
@@ -3302,7 +3302,7 @@ copybootlab	endp
 
 activatepart	proc near
 
-		lea	dx,activated		; print message
+		mov	dx,offset activated	; print message
 		call	printstring
 
 		add	si,9
@@ -3328,10 +3328,10 @@ okacti:		mov	commandptr,si
 		call	activateit
 		jmp	subexit
 
-@@emptyext:	lea	dx,S_emptyext
+@@emptyext:	mov	dx,offset S_emptyext
 		jmp	@@prwar
 
-@@alreadact:	lea	dx,alreadyact		; error if yes
+@@alreadact:	mov	dx,offset alreadyact	; error if yes
 @@prwar:	call	pwarning
 		clc
 		ret
@@ -3345,7 +3345,7 @@ activatepart	endp
 
 deactivatepart	proc near
 
-		lea	dx,deactivated		; print message
+		mov	dx,offset deactivated	; print message
 		call	printstring
 
 		add	si,11
@@ -3368,7 +3368,7 @@ deactivatepart	endp
 
 changetypeid	proc
 
-		lea	dx,changedtype
+		mov	dx,offset changedtype
 		call	printstring
 
 		add	si,11
@@ -3416,13 +3416,13 @@ hider		proc	near
 		jnc	@@okjaj			; and extended position
 		ret
 @@okjaj:	mov	ax,tempflag
-		lea	bx,fatntfs
+		mov	bx,offset fatntfs
 		shl	ax,1
 		add	bx,ax
 		call	[bx]
 		jnc	ok2hide
 
-		lea	bx,fatntmsg	        ; error if not that type
+		mov	bx,offset fatntmsg	; error if not that type
 		add	bx,ax
 		mov	dx,[bx]
 		call	perror
@@ -3448,7 +3448,7 @@ ok2hide:	mov	ax,tempflag
 hideall:	mov	commandptr,si
 		mov	di,1beh
 		mov	cx,4
-		lea	bx,ds:fatntfs
+		mov	bx,offset ds:fatntfs
 		mov	ax,tempflag
 		shl	ax,1
 		add	bx,ax
@@ -3516,11 +3516,11 @@ showtable	proc near
 
 		call	printHDnum
 
-		lea	dx,S_primary
+		mov	dx,offset S_primary
 		call	printstring
-		lea	dx,showheader
+		mov	dx,offset showheader
 		call	printstring
-		lea	dx,underline
+		mov	dx,offset underline
 		call	printstring
 		mov	di,1beh
 		mov	cx,1			; CX - actual entry
@@ -3539,7 +3539,7 @@ shownext:	call	printnotype		; print no. and type
 		call	setcol
 		cmp	byte ptr es:[di],80h
 		jne	notboot
-		lea	dx,star			; print if bootable
+		mov	dx,offset star		; print if bootable
 		call	printstring
 
 notboot:        call    penter
@@ -3549,19 +3549,19 @@ notboot:        call    penter
 		cmp	cx,4
 		jbe	shownext
 
-		lea	dx,S_logical		; get logical data
+		mov	dx,offset S_logical	; get logical data
 		call	printstring
 		call	checkextended
 		jnc	logic
-		lea	dx,none			; print none if no logical
+		mov	dx,offset none		; print none if no logical
 		call	printstring
 		jmp	nologic
 
 logic:		call	penter
 
-		lea	dx,showheader
+		mov	dx,offset showheader
 		call	printstring
-		lea	dx,underline
+		mov	dx,offset underline
 		call	printstring
 		call	getmainextended		; load main extended
 		mov	cx,5			; CX - first logical
@@ -3613,7 +3613,7 @@ printnotype	proc	near
 		call	setcol			; set column
 
 		shl	bx,1
-		lea	si,fstable		; print type
+		mov	si,offset fstable	; print type
 		mov	dx,[si+bx]
 		call	printstring
 
@@ -3796,7 +3796,7 @@ setcol		endp
 
 printHDnum	proc near
 
-		lea	dx,harddisk
+		mov	dx,offset harddisk
 		call	printstring
 		mov	ah,2
 		mov	dl,actualHD
@@ -3818,7 +3818,7 @@ putvariable	proc	near
 		push	es
 		call	FindEnviron		; ES:0 -> root environment
 		jnc	@@gotenv
-		lea	dx,S_noenv
+		mov	dx,offset S_noenv
 		jmp	@@quitenv
 
 @@gotenv:	push	eax			; save size
@@ -3888,7 +3888,7 @@ copynewenv:	pop	eax			; get number
 		clc
 		ret
 
-notenvsp:	lea	dx,noenviron
+notenvsp:	mov	dx,offset noenviron
 @@quitenv:	call	perror
 		pop	eax
 		pop	es
@@ -3908,7 +3908,7 @@ copysize	proc	near
 		add	di,dx			; DI -> after the '=' string
 
 		mov	ebx,0ah
-		lea	si,ascnum+7
+		mov	si,offset ascnum+7
 
 zz5:		xor	edx,edx
 		div	ebx
@@ -3918,7 +3918,7 @@ zz5:		xor	edx,edx
 		or	eax,eax
 		jne	zz5
 
-		lea	si,ascnum
+		mov	si,offset ascnum
 		mov	cx,7
 nzerr:		cmp	byte ptr [si],'0'
 		jne	wrnn
@@ -3931,7 +3931,7 @@ wrnn:		inc	cx
 		pop	es
 		rep	movsb			; copy stringed number
 		pop	es
-		lea	si,ascnum
+		mov	si,offset ascnum
 		mov	eax,30303030h
 		mov	[si],eax
 		mov	[si+4],eax
@@ -3993,12 +3993,12 @@ lookMCB:	cmp	byte ptr es:[0],'Z'	; final?
 		cmp	byte ptr es:[0],'M'	; be sure it's not corrupt
 		jne	@@noMCB
 		mov	cx,7
-		lea	si,comenv	; is it "COMMAND"?
+		mov	si,offset comenv	; is it "COMMAND"?
 		mov	di,8
 		repe	cmpsb
                 je      @@gotMCB
 		mov	cx,4
-		lea	si,dos4env	; is it "4DOS"?
+		mov	si,offset dos4env	; is it "4DOS"?
 		mov	di,8
 		repe	cmpsb
 		je	@@gotMCB
@@ -4022,22 +4022,22 @@ showinfo	proc near
 
 		call	printHDnum
 
-		lea	dx,ebiosex		; extended BIOS?
+		mov	dx,offset ebiosex	; extended BIOS?
 		call	printstring
 		cmp	ebios,1
 		je	fext
-		lea	dx,notf
+		mov	dx,offset notf
 		call	printstring
-fext:		lea	dx,foundstr
+fext:		mov	dx,offset foundstr
 		call	printstring
 
 		cmp	ebios,1
 		je	showebi
 
-		lea	dx,biosstr
+		mov	dx,offset biosstr
 		jmp	showpa
 
-showebi:	lea	dx,ebiosstr		; print EBIOS CHS
+showebi:	mov	dx,offset ebiosstr	; print EBIOS CHS
 showpa:		call	printstring
 
 		mov	eax,cyls
@@ -4048,11 +4048,11 @@ showpa:		call	printstring
 		call	Dec2Ascii
 		call	penter
 
-		lea	dx,maxsize
+		mov	dx,offset maxsize
 		call	printstring
 		mov	eax,etotal
 		call	printsize
-		lea	dx,MB
+		mov	dx,offset MB
 		call	printstring
 		call	penter
 		ret
@@ -4077,12 +4077,12 @@ printCHS	endp
 
 installMBR	proc near
 
-		lea	dx,mbrinstalled
+		mov	dx,offset mbrinstalled
 		call	printstring
 
 		add	si,4
 		mov	commandptr,si
-		lea	si,MBRloader
+		mov	si,offset MBRloader
 		xor	di,di
 		mov	cx,24*16+10
 		rep	movsb			; copy standard loader
@@ -4175,7 +4175,7 @@ mustcorrect     proc near
 		sub	ebx,eax
 		mov	cutspace,ebx
 		mov	psize,eax
-		lea	dx,sizeadjust
+		mov	dx,offset sizeadjust
 		call	pwarning
 sizeO:		pop	dx
 		pop	ebx
@@ -4257,7 +4257,7 @@ checkrelsize	proc near
 		cmp	ax,100
 		jbe	validsize
 
-		lea	dx,badrelsize
+		mov	dx,offset badrelsize
 		call	perror
 		ret
 
@@ -4309,7 +4309,7 @@ checkdefined    proc near
 		dec	al
 		cmp	al,3
 		jbe	okpnumx
-		lea	dx,badnumstr
+		mov	dx,offset badnumstr
 		call	printstring
 		stc
 dontrep:	ret
@@ -4329,7 +4329,7 @@ checkoccupied	proc near
 		cmp	byte ptr es:[di+4],0	; check if occupied
 		jz	nodef
 
-		lea	dx,occupied
+		mov	dx,offset occupied
 		call	perror
 		ret
 
@@ -4587,7 +4587,7 @@ calcend         proc near
 		mov	eax,endsect
 		jmp	oklarge
 
-toolarge:	lea	dx,toobig
+toolarge:	mov	dx,offset toobig
 		call	perror
 		ret
 
@@ -4667,9 +4667,9 @@ activateit	endp
 prgeterr	proc
 		cmp	get1error?,0
 		jne	nospac
-		lea	dx,noentry
+		mov	dx,offset noentry
 		jmp	per
-nospac:		lea	dx,nospace
+nospac:		mov	dx,offset nospace
 per:		call	perror
 		ret
 prgeterr	endp
@@ -4678,7 +4678,7 @@ prgeterr	endp
 
 pwarning	proc
 		push	dx
-		lea	dx,warning
+		mov	dx,offset warning
 		call	printstring
 		pop	dx
 		call	printstring
@@ -4777,7 +4777,7 @@ checkNT		proc
 
 @@itsNT:	mov	ax,_DATA
 		mov	ds,ax
-		lea	dx,S_NTbox
+		mov	dx,offset S_NTbox
 		call	perror
 		xor	ax,ax
 		int	16h
@@ -4802,7 +4802,7 @@ allocate	proc	near
 		int	21h			; allocate
 		jnc	okmem
 		push	ax
-		lea	dx,memerror		; print error
+		mov	dx,offset memerror	; print error
 		call	perror
 		pop	ax
 		call	errno
@@ -4859,7 +4859,7 @@ checkit:        cmp     bx,0aa55h		; check 1
 
 		mov	ah,48h
 		mov	dl,actualHD
-		lea	si,ebiosparams
+		mov	si,offset ebiosparams
                 mov     word ptr [si],1ah
 		int	13h
 		jc	qebios
@@ -4893,7 +4893,7 @@ LBA2CHS		proc near
 		cmp	ebios,1			; check if ebios available
 		je	noaboveCHS		; jump if yes
 
-		lea	dx,overCHS		; else print error
+		mov	dx,offset overCHS	; else print error
 		call	perror
 		ret
 
@@ -4952,7 +4952,7 @@ skiptrans:	mov	firstpoint,eax		; store firstpoint
 		mov	ax,bx
 		mov	transpoint,eax		; store transpoint
 		mov	al,1
-		lea	si,packet
+		mov	si,offset packet
 
 		mov	dl,actualHD
 
@@ -4961,7 +4961,7 @@ skiptrans:	mov	firstpoint,eax		; store firstpoint
 		jnc	@noerror
 
 		push	ax
-		lea	dx,readerror
+		mov	dx,offset readerror
 		call	perror
 		pop	ax
 		call	errno
@@ -4999,7 +4999,7 @@ skipCHSw:	mov	firstpoint,eax
 		shl	eax,16
 		mov	ax,bx
 		mov	transpoint,eax
-		lea	si,packet
+		mov	si,offset packet
 
 		mov	dl,actualHD
 
@@ -5015,7 +5015,7 @@ writebb:	mov	ah,writeint
 		jnc	@written
 
 		push	ax
-		lea	dx,writerror
+		mov	dx,offset writerror
 		call	perror
 		pop	ax
 		call	errno
@@ -5231,7 +5231,7 @@ Dec2Ascii	proc	near
 		push	si
 
 		mov	ebx,0ah
-		lea	si,ascnum+7
+		mov	si,offset ascnum+7
 
 zz4:		xor	edx,edx
 		div	ebx
@@ -5241,7 +5241,7 @@ zz4:		xor	edx,edx
 		or	eax,eax
 		jne	zz4
 
-		lea	si,ascnum
+		mov	si,offset ascnum
 		mov	cx,7
 nzer:		cmp	byte ptr [si],'0'
 		jne	wrn
@@ -5249,7 +5249,7 @@ nzer:		cmp	byte ptr [si],'0'
 		loop	nzer
 wrn:		mov	dx,si
 		call	printstring
-		lea	si,ascnum
+		mov	si,offset ascnum
 		mov	eax,30303030h
 		mov	[si],eax
 		mov	[si+4],eax
@@ -5302,7 +5302,7 @@ asci2hex	proc	near
 		cmp	byte ptr [si],' '
 		ja	nexthexa
 
-		lea	dx,badvalue
+		mov	dx,offset badvalue
 		call	perror
 		ret
 
@@ -5348,7 +5348,7 @@ asci2dec	proc near
 		jb	baddec
 		jmp	gooddec
 
-baddec:		lea	dx,badvalue
+baddec:		mov	dx,offset badvalue
 		call	perror
 		ret
 
@@ -5383,7 +5383,7 @@ asci2dec	endp
 
 perror		proc
 		push	dx
-		lea	dx,error
+		mov	dx,offset error
 		call	printstring
 		pop	dx
 		call	printstring
@@ -5445,7 +5445,7 @@ _aefdisk	proc
 		jae	okproc
 		mov	ax,_DATA
 		mov	ds,ax
-		lea	dx,need386
+		mov	dx,offset need386
 		call	printstring
                 stc
                 jmp     gexit
@@ -5501,7 +5501,7 @@ gexit:		mov	ax,4c00h
 		adc	al,0
 		int	21h		; exit with error code
 
-errorexit:	lea	dx,notsavedMBR
+errorexit:	mov	dx,offset notsavedMBR
 		call	printstring
 		stc
 		jmp	gexit
@@ -5510,11 +5510,11 @@ errorexit:	lea	dx,notsavedMBR
 
 noparams:	mov	ax,_DATA
 		mov	ds,ax		; DS - data segment
-		lea	dx,usage	; print usage info
+		mov	dx,offset usage	; print usage info
 		call	printstring
 		mov	ah,8
 		int	21h
-		lea	dx,switche
+		mov	dx,offset switche
 		call	printstring
 		clc
 		jmp	gexit
