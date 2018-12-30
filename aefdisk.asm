@@ -9,7 +9,7 @@ bootbuffer	equ 1024
 ;บ				Data Segment				     บ
 ;ศอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
 
-_DATA		segment	public
+_DATA		segment	public	para
 
 ;------------ Buffers ------------
 
@@ -478,7 +478,7 @@ DGROUP GROUP _DATA
 ;บ				Code Segment				     บ
 ;ศอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
 
-_TEXT		segment	public
+_TEXT		segment	public	para
 .386
 ASSUME cs:_TEXT, ds:_DATA
 
@@ -2746,9 +2746,9 @@ okdoformat:	cmp	word ptr [es:bx+1feh],0aa55h
 		call	calcboot
 @@nofillboot:	call	calcfree
 
-		mov	ax,es:[bootbuffer+offset secperFAT-offset bootsec16]
+		mov	ax,word ptr es:[secperFAT+offset bootbuffer-offset bootsec16]
 		mov	secperFAT,ax
-		mov	eax,es:[bootbuffer+offset secperFAT32-offset bootsec32]
+		mov	eax,dword ptr es:[secperFAT32+offset bootbuffer-offset bootsec32]
 		mov	secperFAT32,eax
 
 		call	saveboot
@@ -3448,7 +3448,7 @@ ok2hide:	mov	ax,tempflag
 hideall:	mov	commandptr,si
 		mov	di,1beh
 		mov	cx,4
-		mov	bx,offset ds:fatntfs
+		mov	bx,offset fatntfs
 		mov	ax,tempflag
 		shl	ax,1
 		add	bx,ax
