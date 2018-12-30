@@ -4,7 +4,7 @@ AS=owcc
 ASFLAGS=-bdos
 
 LD=owcc
-LDFLAGS=-bdos -fnostdlib
+LDFLAGS=-bdos -fnostdlib -s
 
 RM=rm -f
 
